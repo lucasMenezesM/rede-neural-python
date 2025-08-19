@@ -1,65 +1,17 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import numpy as np
+from NeuralNetwork import NeuralNetwork
 
 app = Flask(__name__)
 CORS(app)
-
-# -----------------------------
-# Classe Rede Neural simples
-# -----------------------------
-
-
-class NeuralNetwork:
-    def __init__(self, input_size, hidden_size, output_size):
-        self.W1 = np.random.randn(input_size, hidden_size)
-        self.b1 = np.zeros((1, hidden_size))
-        self.W2 = np.random.randn(hidden_size, output_size)
-        self.b2 = np.zeros((1, output_size))
-        self.treinada = False
-
-    def sigmoid(self, x):
-        return 1 / (1 + np.exp(-x))
-
-    def sigmoid_derivative(self, x):
-        return x * (1 - x)
-
-    def forward(self, X):
-        self.z1 = np.dot(X, self.W1) + self.b1
-        self.a1 = self.sigmoid(self.z1)
-        self.z2 = np.dot(self.a1, self.W2) + self.b2
-        self.a2 = self.sigmoid(self.z2)
-        return self.a2
-
-    def backward(self, X, y, output, learning_rate=0.1):
-        error = y - output
-        d_output = error * self.sigmoid_derivative(output)
-
-        error_hidden = d_output.dot(self.W2.T)
-        d_hidden = error_hidden * self.sigmoid_derivative(self.a1)
-
-        self.W2 += self.a1.T.dot(d_output) * learning_rate
-        self.b2 += np.sum(d_output, axis=0, keepdims=True) * learning_rate
-        self.W1 += X.T.dot(d_hidden) * learning_rate
-        self.b1 += np.sum(d_hidden, axis=0, keepdims=True) * learning_rate
-
-    def train(self, X, y, epochs=1000):
-        for _ in range(epochs):
-            output = self.forward(X)
-            self.backward(X, y, output)
-        self.treinada = True
-
-    def predict(self, X):
-        output = self.forward(X)
-        return np.argmax(output, axis=1)
-
 
 # -----------------------------
 # Criando rede neural
 # 4x4 -> 16 entradas
 # 3 saídas (dígitos 0 a 2)
 # -----------------------------
-nn = NeuralNetwork(input_size=16, hidden_size=5, output_size=3)
+nn = NeuralNetwork(input_size=16, hidden_size=2, output_size=3)
 
 # -----------------------------
 # Endpoint para treinar a rede
@@ -108,7 +60,7 @@ def treinar():
 
 @app.route("/prever", methods=["POST"])
 def prever():
-    if nn.treinada is False:
+    if nn.trained is False:
         return jsonify({"erro": "Rede neural não treinada"}), 400
 
     if request.json is None:

@@ -1,5 +1,5 @@
 "use client";
-import { easeIn, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { useState } from "react";
 
@@ -10,6 +10,7 @@ const Home: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [epocas, setEpocas] = useState<number | null>(null);
   const [isTraining, setIsTraining] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Função para alternar valor da célula
   const toggleCell = (row: number, col: number) => {
@@ -21,6 +22,9 @@ const Home: React.FC = () => {
 
   // Enviar para a API Flask
   const handlePredict = async () => {
+    setError(null);
+    setIsTraining(false);
+    setSuccessMessage(null);
     try {
       const res = await fetch("http://localhost:5000/prever", {
         method: "POST",
@@ -54,10 +58,12 @@ const Home: React.FC = () => {
 
   const toggleTrain = () => {
     setError(null);
+    setResultadoPrevisao(null);
     setIsTraining(!isTraining);
   };
 
   const handleTrain = async () => {
+    setError(null);
     if (!epocas) return;
 
     try {
@@ -76,6 +82,7 @@ const Home: React.FC = () => {
 
       setEpocas(null);
       setIsTraining(false);
+      setSuccessMessage("Treinamento concluído com sucesso!");
     } catch (error) {
       console.error("Erro ao treinar:", error);
     }
@@ -89,6 +96,16 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-black">
+      {successMessage && (
+        <motion.p
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-green-500 mb-5 font-bold text-2xl text-center"
+        >
+          {successMessage}
+        </motion.p>
+      )}
       <motion.h1
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
@@ -203,7 +220,7 @@ const Home: React.FC = () => {
               placeholder="Determine o número de épocas"
             />
             <button
-              className="ml-2 px-2 bg-green-500 rounded text-white"
+              className="ml-2 px-2 bg-green-500 rounded text-white cursor-pointer"
               onClick={() => handleTrain()}
             >
               Treinar
