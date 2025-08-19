@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import numpy as np
 
 app = Flask(__name__)
+CORS(app)
 
 # -----------------------------
 # Classe Rede Neural simples
@@ -14,6 +16,7 @@ class NeuralNetwork:
         self.b1 = np.zeros((1, hidden_size))
         self.W2 = np.random.randn(hidden_size, output_size)
         self.b2 = np.zeros((1, output_size))
+        self.treinada = False
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
@@ -44,6 +47,7 @@ class NeuralNetwork:
         for _ in range(epochs):
             output = self.forward(X)
             self.backward(X, y, output)
+        self.treinada = True
 
     def predict(self, X):
         output = self.forward(X)
@@ -64,10 +68,10 @@ nn = NeuralNetwork(input_size=16, hidden_size=16, output_size=10)
 
 @app.route("/treinar", methods=["GET"])
 def treinar():
-    if request.json is None:
-        return jsonify({"erro": "Envie um JSON válido"}), 400
+    # if request.json is None:
+    #     return jsonify({"erro": "Envie um JSON válido"}), 400
 
-    epocas = request.json.get("epocas")
+    # epocas = request.json.get("epocas")
 
     # Exemplo de dataset: números "0" e "1"
     # (na prática você teria mais dados para treinar melhor)
@@ -87,9 +91,9 @@ def treinar():
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # representa "0"
     ])
 
-    nn.train(X, y, epochs=epocas)
+    nn.train(X, y)
 
-    return jsonify({"status": "rede treinada com sucesso!"})
+    return jsonify({"status": "rede treinada com sucesso!"}), 200
 
 # -----------------------------
 # Endpoint para prever
@@ -98,6 +102,9 @@ def treinar():
 
 @app.route("/prever", methods=["POST"])
 def prever():
+    if nn.treinada is False:
+        return jsonify({"erro": "Rede neural não treinada"}), 400
+
     if request.json is None:
         return jsonify({"erro": "Envie um JSON válido"}), 400
 
@@ -110,7 +117,7 @@ def prever():
     X = np.array(data).reshape(1, 16)
 
     pred = nn.predict(X)
-    return jsonify({"previsao": int(pred[0])})
+    return jsonify({"previsao": int(pred[0])}), 200
 
 
 if __name__ == "__main__":
