@@ -57,38 +57,44 @@ class NeuralNetwork:
 # -----------------------------
 # Criando rede neural
 # 4x4 -> 16 entradas
-# 10 saídas (dígitos 0 a 9)
+# 3 saídas (dígitos 0 a 2)
 # -----------------------------
-nn = NeuralNetwork(input_size=16, hidden_size=16, output_size=10)
+nn = NeuralNetwork(input_size=16, hidden_size=5, output_size=3)
 
 # -----------------------------
 # Endpoint para treinar a rede
 # -----------------------------
 
 
-@app.route("/treinar", methods=["GET"])
+@app.route("/treinar", methods=["POST"])
 def treinar():
-    # if request.json is None:
-    #     return jsonify({"erro": "Envie um JSON válido"}), 400
+    if request.json is None:
+        return jsonify({"erro": "Envie um JSON válido"}), 400
 
-    # epocas = request.json.get("epocas")
+    epocas = request.json.get("epocas")
 
-    # Exemplo de dataset: números "0" e "1"
-    # (na prática você teria mais dados para treinar melhor)
+    if not epocas:
+        return jsonify({"erro": "Envie o número de épocas"}), 400
+
     X = np.array([
+        [1, 1, 1, 1,
+         1, 0, 0, 1,
+         1, 0, 0, 1,
+         1, 1, 1, 1],  # número "0",
         [0, 0, 1, 0,
-         0, 1, 0, 0,
+         0, 0, 1, 0,
          0, 0, 1, 0,
          0, 0, 1, 0],  # número "1"
-        [0, 1, 1, 0,
-         1, 0, 0, 1,
+        [0, 0, 1, 0,
+         0, 1, 1, 0,
          1, 1, 1, 1,
-         1, 0, 0, 1],  # número "0"
+         0, 0, 1, 0],  # número "4",
     ])
 
     y = np.array([
-        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],  # representa "1"
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # representa "0"
+        [1, 0, 0],  # "0" → posição 0
+        [0, 1, 0],  # "1" → posição 1
+        [0, 0, 1],  # "4" → posição 2
     ])
 
     nn.train(X, y)
