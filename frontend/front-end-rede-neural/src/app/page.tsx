@@ -26,7 +26,7 @@ const Home: React.FC = () => {
     setIsTraining(false);
     setSuccessMessage(null);
     try {
-      const res = await fetch("http://localhost:5000/prever", {
+      const res = await fetch("http://localhost:5000/identificar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ matriz: matrix }),
@@ -36,7 +36,7 @@ const Home: React.FC = () => {
 
       if (!res.ok) {
         // trata erro do backend
-        setError(data.erro || "Ocorreu um erro ao prever");
+        setError(data.erro || "Ocorreu um erro ao identificar o dígito");
         return;
       }
 
@@ -52,7 +52,7 @@ const Home: React.FC = () => {
           break;
       }
     } catch (error) {
-      console.error("Erro ao prever:", error);
+      console.error("Erro ao identificar o dígito:", error);
     }
   };
 
@@ -82,7 +82,7 @@ const Home: React.FC = () => {
 
       setEpocas(null);
       setIsTraining(false);
-      setSuccessMessage("Treinamento concluído com sucesso!");
+      setSuccessMessage(data.sucesso);
     } catch (error) {
       console.error("Erro ao treinar:", error);
     }
@@ -155,25 +155,28 @@ const Home: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="flex gap-2 mb-5"
       >
-        <button
+        <motion.button
+          whileHover={{ scale: 1.03 }}
           onClick={handlePredict}
           className="px-6 py-2 bg-green-500 text-white font-semibold rounded cursor-pointer"
         >
           Enviar para Rede Neural
-        </button>
-        <button
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.03 }}
           className="px-6 py-2 bg-red-500 text-white font-semibold rounded cursor-pointer"
           onClick={() => handleClean()}
         >
           Limpar Matriz
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.03 }}
           className="px-6 py-2 bg-blue-500 text-white font-semibold rounded cursor-pointer"
           onClick={() => toggleTrain()}
         >
           Treinar Rede
-        </button>
+        </motion.button>
       </motion.div>
 
       {resultadoPrevisao !== null && (
