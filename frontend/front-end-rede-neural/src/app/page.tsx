@@ -8,7 +8,7 @@ const Home: React.FC = () => {
   const [matrix, setMatrix] = useState<number[][]>(Array(4).fill(Array(4).fill(0)));
   const [resultadoPrevisao, setResultadoPrevisao] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [epocas, setEpocas] = useState<number | null>(null);
+  const [epochs, SetEpochs] = useState<number | null>(null);
   const [isTraining, setIsTraining] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -21,7 +21,7 @@ const Home: React.FC = () => {
   };
 
   // Enviar para a API Flask
-  const handlePredict = async () => {
+  const handleIdentify = async () => {
     setError(null);
     setIsTraining(false);
     setSuccessMessage(null);
@@ -64,13 +64,13 @@ const Home: React.FC = () => {
 
   const handleTrain = async () => {
     setError(null);
-    if (!epocas) return;
+    if (!epochs) return;
 
     try {
       const res = await fetch("http://localhost:5000/treinar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ epocas }),
+        body: JSON.stringify({ epochs }),
       });
 
       const data = await res.json();
@@ -80,7 +80,7 @@ const Home: React.FC = () => {
         return;
       }
 
-      setEpocas(null);
+      SetEpochs(null);
       setIsTraining(false);
       setSuccessMessage(data.sucesso);
     } catch (error) {
@@ -157,7 +157,7 @@ const Home: React.FC = () => {
       >
         <motion.button
           whileHover={{ scale: 1.03 }}
-          onClick={handlePredict}
+          onClick={handleIdentify}
           className="px-6 py-2 bg-green-500 text-white font-semibold rounded cursor-pointer"
         >
           Enviar para Rede Neural
@@ -217,8 +217,8 @@ const Home: React.FC = () => {
             <p className="">Número de épocas:</p>
             <input
               type="number"
-              value={Number(epocas)}
-              onChange={(e) => setEpocas(Number(e.target.value))}
+              value={Number(epochs)}
+              onChange={(e) => SetEpochs(Number(e.target.value))}
               className="border border-gray-300 rounded"
               placeholder="Determine o número de épocas"
             />

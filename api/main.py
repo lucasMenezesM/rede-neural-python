@@ -16,9 +16,9 @@ def treinar():
     if request.json is None:
         return jsonify({"erro": "Envie um JSON válido"}), 400
 
-    epocas = request.json.get("epocas")
+    epochs = request.json.get("epochs")
 
-    if not epocas:
+    if not epochs:
         return jsonify({"erro": "Envie o número de épocas"}), 400
 
     # conjuntos de treinamento dos dígitos 0, 1 e 4
@@ -27,7 +27,7 @@ def treinar():
     # saídas desejadas para cada conjunto de treinamento
     y = np.array(wished_outputs)
 
-    nn.train(X, y)
+    nn.train(X=X, y=y, epochs=epochs)
 
     return jsonify({"sucesso": "Rede treinada com sucesso!"}), 200
 
@@ -48,8 +48,8 @@ def identificar():
     # Flatten (4x4 -> vetor de 16)
     X = np.array(data).reshape(1, 16)
 
-    pred = nn.identify(X)
-    return jsonify({"previsao": int(pred[0])}), 200
+    result = nn.identify(X)
+    return jsonify({"previsao": int(result[0])}), 200
 
 
 if __name__ == "__main__":
