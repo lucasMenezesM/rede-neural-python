@@ -26,9 +26,9 @@ class NeuralNetwork:
         self.a2 = self.sigmoid(self.z2)
         return self.a2
 
-    def backward(self, X, y, output, learning_rate=0.1):
+    def backward(self, X, yd, output, learning_rate=0.1):
         # 3º Passo: calcula o erro na camada de saída
-        error = y - output
+        error = yd - output
 
         # 4º Passo: calcula gradiente do erro na camada de saída
         d_output = error * self.sigmoid_derivative(output)
@@ -45,10 +45,10 @@ class NeuralNetwork:
         self.W1 += X.T.dot(d_hidden) * learning_rate
         self.b1 += np.sum(d_hidden, axis=0, keepdims=True) * learning_rate
 
-    def train(self, X, y, epochs=1000):
+    def train(self, X, yd, epochs=1000):
         for _ in range(epochs):
             output = self.forward(X)
-            self.backward(X, y, output)
+            self.backward(X, yd, output)
         self.trained = True
 
     def identify(self, X):

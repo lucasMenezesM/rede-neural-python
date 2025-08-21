@@ -25,9 +25,9 @@ def treinar():
     X = np.array(training_sets)
 
     # saídas desejadas para cada conjunto de treinamento
-    y = np.array(wished_outputs)
+    yd = np.array(wished_outputs)
 
-    nn.train(X=X, y=y, epochs=epochs)
+    nn.train(X=X, yd=yd, epochs=epochs)
 
     return jsonify({"sucesso": "Rede treinada com sucesso!"}), 200
 
