@@ -29,7 +29,7 @@ def treinar():
 
     nn.train(X=X, yd=yd, epochs=epochs)
 
-    return jsonify({"sucesso": "Rede treinada com sucesso!"}), 200
+    return jsonify({"sucesso": "Rede treinada com sucesso!", "mean_squared_errors": nn.mean_squared_errors}), 200
 
 
 @app.route("/identificar", methods=["POST"])

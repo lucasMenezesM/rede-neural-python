@@ -9,6 +9,7 @@ class NeuralNetwork:
         self.W2 = np.random.randn(hidden_size, output_size)
         self.b2 = np.zeros((1, output_size))
         self.trained = False
+        self.mean_squared_errors = []
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
@@ -46,10 +47,21 @@ class NeuralNetwork:
         self.b1 += np.sum(d_hidden, axis=0, keepdims=True) * learning_rate
 
     def train(self, X, yd, epochs=1000):
-        for _ in range(epochs):
+        self.mean_squared_errors = []
+        for epoch in range(epochs):
             output = self.forward(X)
             self.backward(X, yd, output)
-        self.trained = True
+
+            # Calcula o erro médio quadrático (MSE) desta época
+            mse = np.mean(np.square(yd - output))
+
+            # Exibe o erro a cada 100 épocas
+            if epoch % 100 == 0:
+                self.mean_squared_errors.append({epoch: mse})
+                print(f"Época {epoch} - Erro MSE: {mse:.6f}")
+            self.trained = True
+
+        return self.mean_squared_errors
 
     def identify(self, X):
         output = self.forward(X)  # output = [0.8, 0.1, 0.05]
